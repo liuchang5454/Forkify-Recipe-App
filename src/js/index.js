@@ -15,6 +15,7 @@ import {elements, renderLoader, clearloader} from "./views/base";
 */
 
 const state = {};
+window.state = state;
 
 /*
 SEARCH CONTROLLER
@@ -22,7 +23,6 @@ SEARCH CONTROLLER
 const controlSearch = async () => {
     // //1. get query from view
     const query = searchView.getInput();
-    console.log(query);
 
     if(query){
         //2. new search obj and add to state
@@ -57,7 +57,6 @@ elements.searchForm.addEventListener("submit", e => {
 
 elements.searchResPages.addEventListener("click", e => {
     const btn = e.target.closest(".btn-inline");
-    console.log(btn); 
     if(btn){
         const goToPage = parseInt(btn.dataset.goto, 10);
         //console.log(goToPage);
@@ -73,8 +72,7 @@ RECIPE CONTROLLER
 const controlRecipe = async () => {
     //get id from url
     const id = window.location.hash.replace("#", "");
-    console.log(id);
-
+    
     if(id){
         //prepare ui for changes
         recipeView.clearRecipe();
@@ -126,6 +124,25 @@ const controlList = () => {
     });
 }
 
+//handle delete and update list item events
+elements.shopping.addEventListener("click", e => {
+    const id = e.target.closest(".shopping__item").dataset.itemid;
+
+    //handle the delete button
+    if(e.target.matches(".shopping__delete, .shopping__delete *")){
+        //delete from state
+        state.list.deleteItem(id);
+
+        //delete from UI
+        listView.deleteItem(id);
+    
+    //handle count update
+    }else if(e.target.matches(".shopping__count-value")){
+        const val = parseFloat(e.target.value, 10);
+        state.list.updateCount(id, val);
+    }
+});
+
 
 //handling recipe button clicks
 elements.recipe.addEventListener("click", e => {
@@ -144,7 +161,6 @@ elements.recipe.addEventListener("click", e => {
     }
 
 
-    console.log(state.recipe);
 });
 
 window.l = new List(); 
